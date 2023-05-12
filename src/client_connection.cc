@@ -28,10 +28,8 @@
 
 namespace sockets {
 
-ClientConnection::ClientConnection(int control_socket, int data_socket) {
-  char buffer[MAX_BUFFER];
+ClientConnection::ClientConnection(int control_socket) {
   control_socket_ = control_socket;
-  data_socket_ = data_socket;
   file_descriptor_ = fdopen(control_socket_, "a+");
   if (file_descriptor_ == nullptr) {
     std::cout << "Connection closed" << std::endl;

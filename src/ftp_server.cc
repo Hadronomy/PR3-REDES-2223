@@ -43,26 +43,6 @@ void FTPServer::CreateSocketsTCP() {
     if (listen(control_socket_, 3)) {
       throw std::system_error(errno, std::system_category());
     }
-
-    struct sockaddr_in data_address;
-    const int kDataPort = 20;
-    data_socket_ = socket(AF_INET, SOCK_STREAM, 0);
-    if (data_socket_ < 0) {
-      throw std::system_error(errno, std::system_category());
-    }
-    if (setsockopt(data_socket_, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
-      throw std::system_error(errno, std::system_category());
-    }
-    data_address.sin_family = AF_INET;
-    data_address.sin_addr.s_addr = INADDR_ANY;
-    data_address.sin_port = htons(kDataPort);
-    if (bind(data_socket_, (struct sockaddr*)&data_address, sizeof(data_address)) < 0) {
-      throw std::system_error(errno, std::system_category());
-    }
-    if (listen(data_socket_, 3)) {
-      throw std::system_error(errno, std::system_category());
-    }
-    std::cout << "Finish creating sockets" << std::endl;
   } catch (...) {
     std::throw_with_nested(std::runtime_error("While configuring TCP Socket"));
   }
@@ -92,7 +72,7 @@ void FTPServer::Run() {
         << ", ip is: " << inet_ntoa(control_address.sin_addr) << ", port : "
         << ntohs(control_address.sin_port) << std::endl;
 
-      auto connection = std::make_shared<ClientConnection>(new_control_socket, data_socket_);
+      auto connection = std::make_shared<ClientConnection>(new_control_socket);
       threads.emplace_back(RunClientConnection, *this, connection);
     }
   } catch (...) {

@@ -26,7 +26,7 @@ const FTPCommandRegistry DEFAULT_FTP_REGISTRY = FTPCommandRegistry()
 class FTPServer {
  public:
   FTPServer(const FTPCommandRegistry& cmd_registry = DEFAULT_FTP_REGISTRY, const int port = 21) 
-    : cmd_registry_(cmd_registry), port_(port), control_socket_(-1), data_socket_(-1), connections_() {}
+    : cmd_registry_(cmd_registry), port_(port), control_socket_(-1), connections_() {}
   FTPServer(const int port) 
     : FTPServer(DEFAULT_FTP_REGISTRY, port) {}
   
@@ -40,7 +40,6 @@ class FTPServer {
   FTPCommandRegistry cmd_registry_;
   int port_;
   int control_socket_;
-  int data_socket_;
   std::list<ClientConnection> connections_;
 };
 

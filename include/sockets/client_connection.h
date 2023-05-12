@@ -15,7 +15,7 @@ class FTPServer;
 
 class ClientConnection {
  public:
-  ClientConnection(int control_socket, int data_socket);
+  ClientConnection(int control_socket);
   ~ClientConnection();
   
   inline bool IsOk() const { return is_ok_; }
