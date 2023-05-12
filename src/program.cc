@@ -19,6 +19,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include "sockets/ftp_server.h"
 #include "sockets/hourglass.h"
 #include "sockets/program.h"
 #include "sockets/utils.h"
@@ -41,6 +42,8 @@ Program::Program() : command_("ftp-server") {
 void Program::Run(const int argc, const char *argv[]) {
   auto &cli = GetCli();
   cli.Parse(argc, argv);
+  FTPServer server(2121);
+  server.Run();
 }
 
 } // namespace sockets

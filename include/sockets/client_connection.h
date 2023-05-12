@@ -15,7 +15,7 @@ class FTPServer;
 
 class ClientConnection {
  public:
-  ClientConnection(const int socket);
+  ClientConnection(int control_socket, int data_socket);
   ~ClientConnection();
   
   void WaitForRequests(const FTPServer& server);
@@ -23,7 +23,8 @@ class ClientConnection {
 
 private:
   bool is_ok_;
-  std::unique_ptr<FILE> file_descriptor_;
+  FILE* file_descriptor_;
+  char command_[MAX_BUFFER];
   char arg_[MAX_BUFFER];
   int data_socket_;
   int control_socket_;

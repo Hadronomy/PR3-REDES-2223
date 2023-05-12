@@ -5,6 +5,7 @@
 #include <exception>
 #include <memory>
 #include <netdb.h>
+#include <thread>
 
 #include <stdexcept>
 #include <sys/types.h>
@@ -27,25 +28,26 @@
 
 namespace sockets {
 
-ClientConnection::ClientConnection(int socket) {
+ClientConnection::ClientConnection(int control_socket, int data_socket) {
   char buffer[MAX_BUFFER];
-  control_socket_ = socket;
-  file_descriptor_ = std::unique_ptr<FILE>(fdopen(socket, "a+"));
+  control_socket_ = control_socket;
+  data_socket_ = data_socket;
+  file_descriptor_ = fdopen(control_socket_, "a+");
   if (file_descriptor_ == nullptr) {
     std::cout << "Connection closed" << std::endl;
     // FIXME: This is a little weird
-    fclose(file_descriptor_.get());
+    fclose(file_descriptor_);
     close(control_socket_);
     is_ok_ = false;
     return;
   }
   is_ok_ = true;
-  data_socket_ = -1;
+  control_socket_ = -1;
 }
 
 ClientConnection::~ClientConnection() {
   if (is_ok_) {
-    fclose(file_descriptor_.get());
+    fclose(file_descriptor_);
     close(control_socket_);
   }
 }
@@ -58,6 +60,7 @@ void ClientConnection::Stop() {
 int ConnectTCP(uint32_t address, uint16_t port) {
   try {
     // TODO: Connect TCP
+    return 0;
   } catch(...) {
     std::throw_with_nested(std::runtime_error("Failed to bind tcp"));
   }
@@ -67,10 +70,11 @@ void ClientConnection::WaitForRequests(const FTPServer& server) {
   if (!is_ok_) {
     return;
   }
-  while (true) {
-    char command[MAX_BUFFER];
-    fscanf(file_descriptor_.get(), "%s", command);
-    std::string cmd_str(command);
+  while (data_socket_ != -1) {
+    fprintf(file_descriptor_, "220 Service Ready\n");
+    fflush(file_descriptor_);
+    fscanf(file_descriptor_, "%s", command_);
+    std::string cmd_str(command_);
     auto& registry = server.GetCommandRegistry();
     registry.TryExecute(cmd_str);
   }

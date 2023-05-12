@@ -5,6 +5,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <iostream>
 
 #include "ftp_command.h"
 
@@ -16,7 +17,7 @@ namespace sockets {
  */
 class FTPCommandRegistry {
  public:
-  FTPCommandRegistry() {}
+  FTPCommandRegistry() {};
 
   /**
    * @brief Adds a new command into the registry
@@ -24,7 +25,7 @@ class FTPCommandRegistry {
    * @param command 
    * @return FTPCommandRegistry& 
    */
-  inline FTPCommandRegistry& Register(const std::unique_ptr<FTPCommand> command) {
+  inline FTPCommandRegistry& Register(const std::shared_ptr<FTPCommand>& command) {
     commands_.emplace(command->Keyword(), command);
     return *this;
   }
@@ -57,7 +58,7 @@ class FTPCommandRegistry {
   }
 
  private:
-  std::map<std::string, std::unique_ptr<FTPCommand>> commands_; 
+  std::map<std::string, std::shared_ptr<FTPCommand>> commands_; 
 };
 
 }
