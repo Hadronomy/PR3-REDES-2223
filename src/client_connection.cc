@@ -81,8 +81,12 @@ void ClientConnection::WaitForRequests(const FTPServer& server) {
     fscanf(file_descriptor_, "%s", command_);
     std::string cmd_str(command_);
     auto& registry = server.GetCommandRegistry();
-    registry.TryExecute(cmd_str, *this);
-    std::cout << "Executed " << cmd_str << " command from socket" << std::endl;
+    if (registry.Exists(cmd_str)) {
+      registry.TryExecute(cmd_str, *this);
+      std::cout << "Executed " << cmd_str << " command from socket" << std::endl;
+    } else {
+      fprintf(file_descriptor_, "500 Syntax error, unrecognized command.\n");
+    }
   }
 }
 
