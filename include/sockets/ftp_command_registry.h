@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "ftp_command.h"
+#include "sockets/client_connection.h"
 
 namespace sockets {
 
@@ -37,9 +38,9 @@ class FTPCommandRegistry {
    * @return true
    * @return false
    */
-  inline bool TryExecute(const std::string& input) const {
+  inline bool TryExecute(const std::string& input, ClientConnection& client_connection) const {
     if (Exists(input)) {
-      commands_.at(input)->Run();
+      commands_.at(input)->Run(client_connection);
       return true;
     }
     return false;

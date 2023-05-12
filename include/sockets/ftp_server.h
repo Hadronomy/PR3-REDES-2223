@@ -13,7 +13,10 @@
 namespace sockets {
 
 const FTPCommandRegistry DEFAULT_FTP_REGISTRY = FTPCommandRegistry()
-  .Register(std::shared_ptr<FTPCommand>(new UserCommand()));
+  .Register(std::shared_ptr<FTPCommand>(new UserCommand()))
+  .Register(std::shared_ptr<FTPCommand>(new PassCommand()))
+  .Register(std::shared_ptr<FTPCommand>(new SystCommand()))
+  .Register(std::shared_ptr<FTPCommand>(new QuitCommand()));
 
 class FTPServer {
  public:

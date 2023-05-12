@@ -18,6 +18,13 @@ class ClientConnection {
   ClientConnection(int control_socket, int data_socket);
   ~ClientConnection();
   
+  inline bool IsOk() const { return is_ok_; }
+  inline FILE* GetFileDescriptor() const { return file_descriptor_; }
+  inline char* GetCommandBuffer() { return command_; }
+  inline char* GetArgBuffer() { return arg_; }
+  inline int GetDataSocket() const { return data_socket_; }
+  inline int GetControlSocket() const { return control_socket_; }
+
   void WaitForRequests(const FTPServer& server);
   void Stop();
 

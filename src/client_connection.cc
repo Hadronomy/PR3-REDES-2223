@@ -55,6 +55,7 @@ ClientConnection::~ClientConnection() {
 void ClientConnection::Stop() {
   close(data_socket_);
   close(control_socket_);
+  control_socket_ = -1;
 }
  
 int ConnectTCP(uint32_t address, uint16_t port) {
@@ -70,13 +71,14 @@ void ClientConnection::WaitForRequests(const FTPServer& server) {
   if (!is_ok_) {
     return;
   }
+  fprintf(file_descriptor_, "220 Service Ready\n");
   while (data_socket_ != -1) {
-    fprintf(file_descriptor_, "220 Service Ready\n");
-    fflush(file_descriptor_);
+    std::cout << "Waiting from command in socket..." << std::endl;
     fscanf(file_descriptor_, "%s", command_);
     std::string cmd_str(command_);
     auto& registry = server.GetCommandRegistry();
-    registry.TryExecute(cmd_str);
+    registry.TryExecute(cmd_str, *this);
+    std::cout << "Executed " << cmd_str << " command from socket" << std::endl;
   }
 }
 
