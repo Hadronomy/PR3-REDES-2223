@@ -26,6 +26,7 @@ class ClientConnection {
   inline int GetControlSocket() const { return control_socket_; }
 
   void WaitForRequests(const FTPServer& server);
+  int ConnectTCP(uint32_t address, uint16_t port);
   void Stop();
 
 private:

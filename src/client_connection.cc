@@ -58,10 +58,13 @@ void ClientConnection::Stop() {
   control_socket_ = -1;
 }
  
-int ConnectTCP(uint32_t address, uint16_t port) {
+int ClientConnection::ConnectTCP(uint32_t address, uint16_t port) {
   try {
-    // TODO: Connect TCP
-    return 0;
+    struct sockaddr_in data_address;
+    data_address.sin_family = AF_INET;
+    data_address.sin_addr.s_addr = address;
+    data_address.sin_port = htons(port);
+    return connect(data_socket_, (struct sockaddr*)&data_address, sizeof(data_address));
   } catch(...) {
     std::throw_with_nested(std::runtime_error("Failed to bind tcp"));
   }
@@ -70,6 +73,9 @@ int ConnectTCP(uint32_t address, uint16_t port) {
 void ClientConnection::WaitForRequests(const FTPServer& server) {
   if (!is_ok_) {
     return;
+  }
+  if (send(control_socket_, "Welcome to FTP\n", strlen("Welcome FTP\n"), 0) != strlen("Welcome to FTP\n")) {
+    std::cout << "Send failed" << std::endl;
   }
   fprintf(file_descriptor_, "220 Service Ready\n");
   while (data_socket_ != -1) {

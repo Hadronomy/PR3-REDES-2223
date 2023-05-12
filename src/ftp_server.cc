@@ -83,7 +83,6 @@ void FTPServer::Run() {
     std::vector<std::thread> threads;
     while (true) {
       std::cout << "Accepting new connections..." << std::endl;
-
       std::cout << "Awaiting for control socket..." << std::endl;
       int new_control_socket = accept(control_socket_, (struct sockaddr*)&control_address, &control_address_lenght);
       if (new_control_socket < 0) {
@@ -93,20 +92,7 @@ void FTPServer::Run() {
         << ", ip is: " << inet_ntoa(control_address.sin_addr) << ", port : "
         << ntohs(control_address.sin_port) << std::endl;
 
-      // std::cout << "Awaiting for data socket..." << std::endl;
-      // int new_data_socket = accept(data_socket_, (struct sockaddr*)&data_address, &data_address_lenght);
-      // if (new_data_socket < 0) {
-      //   throw std::system_error(errno, std::system_category());
-      // }
-      // std::cout << "New connection for command socket, socket fd is " << new_data_socket
-      //   << ", ip is: " << inet_ntoa(data_address.sin_addr) << ", port : "
-      //   << ntohs(data_address.sin_port) << std::endl;
-
-      // if (send(new_control_socket, "Welcome to FTP\n", strlen("Welcome FTP\n"), 0) != strlen("Welcome to FTP\n")) {
-      //   std::cout << "Send failed" << std::endl;
-      // }
-
-      auto connection = std::make_shared<ClientConnection>(new_control_socket, 0);
+      auto connection = std::make_shared<ClientConnection>(new_control_socket, data_socket_);
       threads.emplace_back(RunClientConnection, *this, connection);
     }
   } catch (...) {
